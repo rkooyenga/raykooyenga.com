@@ -1,6 +1,6 @@
 ## 1st Post & Introduction
 
-Welcome, and thanks a lot for reading. This is my 1st post, of my new blog. Merely one of a series of firsts though. This also marks the 1st such site I've ever published in my real name as opposed to anonymous or aliases. And consequently will be the 1st one I take seriously and intend to put forth a previously undemonstrated degree of diligence, and higher frequency publishing schedule. Which is to say *if* you fancy any of the type of content here, find it useful or interesting, there will be more where that came from.
+Welcome, and thanks a lot for reading. I mean that sincerely, I appreciate ever follower here. This is my 1st post, of my new blog. Merely one of a series of firsts though. This also marks the 1st such site I've ever published in my real name as opposed to anonymous or aliases. And consequently will be the 1st one I take seriously and intend to put forth a previously undemonstrated degree of diligence, and higher frequency publishing schedule. Which is to say *if* you fancy any of the type of content here, find it useful or interesting, there will be more where that came from.
 
 I intend to span a few topics rather than have a singular focus. That's not the smartest branding strategy but it's going to feel more sincere or natural this way to not have a rigid structure. Here's what you can expect:
 
