@@ -1,0 +1,23 @@
+
+@import url(https://fonts.googleapis.com/css2?family=Pixelify+Sans);
+body {
+  font-family: "IBM Plex Sans", sans;
+  background: #fff;
+  color: #000;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+header {
+  text-align: center;
+  padding: 2rem;
+}
+main {
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 1rem;
+}
+h1 {
+    font-family: "Pixelify Sans", sans;
+    font-size 1.5rem;
+}
