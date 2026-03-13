@@ -198,7 +198,16 @@
             font-family: var(--font-mono); letter-spacing: 0;
             transition: color 0.5s ease;
         }
-
+        
+	h1, 
+	#ascii-viewport, 
+	.branding, 
+	.node-tag,
+	.controls-inline {
+	    user-select: none;
+	    -webkit-user-select: none; /* Safari compatibility */
+	}
+	
         /* Center-Aligned Header */
         header {
             position: fixed; top: 0; left: 0; right: 0; padding: 40px;
