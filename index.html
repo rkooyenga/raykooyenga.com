@@ -48,6 +48,7 @@
         "https://resume.raykooyenga.com",
         "https://github.com/deadflowers",
         "https://github.com/rkooyenga",
+        "https://rkooyenga.github.io",
         "https://www.linkedin.com/in/ray-kooyenga-0a4753176",
         "https://www.crunchbase.com/person/ray-kooyenga-c397",
         "https://www.imdb.com/name/nm15105839/",
@@ -64,6 +65,7 @@
         "https://about.me/raymondkooyenga",
         "https://keybase.io/raykooyenga",
         "https://vimeo.com/raykoo",
+        "https://www.coursera.org/user/986f2b41cc2e1b98ddf373abd07dbc96",
         "https://www.quora.com/profile/Ray-Kooyenga-1",
         "https://www.goodreads.com/user/show/70938807-ray-kooyenga",
         "https://www.pinterest.com/rkooyenga/",
@@ -97,7 +99,7 @@
     <meta name="description" content="Ray Kooyenga personal website">
     <meta name="author" content="ray kooyenga">
     <meta name="copyright" content="ray kooyenga" >
-<meta name="generator" content="Hack Micro">
+    <meta name="generator" content="Hack Micro">
     <meta http-equiv="cleartype" content="on">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Cache-Control" content="no-cache, max-age=0, must-revalidate, no-store">
@@ -138,9 +140,9 @@
     <meta property="article:tag" content="share-alike" />
     <meta property="article:section" content="" />
     <meta property="article:published_time" content="2024-10-22T19:35:53.000-07:00" />
-    <meta property="article:modified_time" content="2026-03-09T07:00:00.000-08:00" />
-    <meta property="og:updated_time" content="2026-03-09T07:00:00.000-08:00" />
-    <meta name="revised" content="09 March 2026">
+    <meta property="article:modified_time" content="2026-03-30T07:00:00.000-08:00" />
+    <meta property="og:updated_time" content="2026-03-30T07:00:00.000-08:00" />
+    <meta name="revised" content="30 March 2026">
 
 
     <meta property="fb:app_id" content="" />
@@ -385,7 +387,7 @@
 <body class="">
 
     <div id="sys-status">SYS_LINK // STDBY</div>
-    <video id="debug-cam" style="display:none;" autoplay playsinline muted></video>
+<video id="debug-cam" autoplay playsinline muted style="position: fixed; top: 0; left: 0; width: 2px; height: 2px; opacity: 0.01; pointer-events: none; z-index: 1;"></video>
     <div id="ascii-viewport"></div>
 
     <header>
@@ -506,7 +508,9 @@
                 </div>
             </div>
             <div style="margin-top:40px; border: 1px dashed var(--border); padding: 15px; font-size: 0.8rem; color: #888;">
-                BTC: 3Nx9RSNRxxhWsvyitK9vysEU6XMXMYzPVM
+            <p>    BTC: 3Nx9RSNRxxhWsvyitK9vysEU6XMXMYzPVM</p>
+<p>Venmo: raykoo</p>
+<p>Paypal: paypal.me/raypay</p>
             </div>
         </div>
     </div>
@@ -603,18 +607,72 @@
             }
         });
 
-        async function startCore() {
+let camActive = false;
+
+async function startCore() {
+            if (camActive) return;
+            const v = document.getElementById('debug-cam');
+            
+            let stream;
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                const v = document.getElementById('debug-cam'); v.srcObject = stream;
-                const cam = new Camera(v, { onFrame: async () => await hands.send({image: v}) });
-                cam.start();
-            } catch(e) { document.getElementById('sys-status').innerText = "TACTILE_MODE_ON"; }
+                // Attempt 1: Prioritize mobile front-facing camera
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            } catch (err) {
+                try {
+                    // Attempt 2: Fallback for strict desktop browsers (Firefox/Opera) that reject facingMode
+                    console.warn("facingMode rejected, attempting generic video access...");
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                } catch (fallbackErr) {
+                    console.error("Camera access utterly denied or hardware locked:", fallbackErr);
+                    document.getElementById('sys-status').innerText = "TACTILE_MODE_ON // CAM_DENIED";
+                    return; // Exit function if hardware is locked
+                }
+            }
+
+            v.srcObject = stream;
+            
+            const startProcessing = () => {
+                v.play().then(() => {
+                    camActive = true;
+                    let lastVideoTime = -1;
+                    
+                    const sendFrame = async () => {
+                        if (!v.paused && !v.ended && v.readyState >= 2) {
+                            if (v.currentTime !== lastVideoTime) {
+                                lastVideoTime = v.currentTime;
+                                try {
+                                    await hands.send({image: v});
+                                } catch (err) { console.warn("MediaPipe Frame Drop:", err); }
+                            }
+                        }
+                        requestAnimationFrame(sendFrame);
+                    };
+                    
+                    requestAnimationFrame(sendFrame);
+                }).catch(e => {
+                    console.error("Autoplay blocked by browser:", e);
+                    document.getElementById('sys-status').innerText = "TACTILE_MODE // CLICK [SYNC_CORE] TO ALLOW CAM";
+                });
+            };
+
+            if (v.readyState >= 1) {
+                startProcessing();
+            } else {
+                v.onloadedmetadata = startProcessing;
+            }
         }
 
         function togglePhase() { document.body.classList.toggle('dark-mode'); }
-        function resync() { tX = 0; tY = 0; tZ = 5; tRotZ = 0; track.scrollTo({left: 0, behavior: 'smooth'}); }
+        
+        /* Bind the camera start to a physical click event to bypass strict Autoplay policies */
+        function resync() { 
+            tX = 0; tY = 0; tZ = 5; tRotZ = 0; 
+            if (typeof track !== 'undefined') track.scrollTo({left: 0, behavior: 'smooth'}); 
+            if (!camActive) startCore(); 
+        }
 
+        /* Attempt auto-start, but fallback to button click if blocked */
+        setTimeout(startCore, 2500);
         function animate() {
             requestAnimationFrame(animate);
             
